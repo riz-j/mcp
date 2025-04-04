@@ -1,4 +1,4 @@
-// \\wsl.localhost\Debian\home\rizki\Code\mcp\apps\mssql\server.js
+// \\wsl.localhost\Debian\home\rizki\Code\mcp\apps\mssql\server.ts
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
