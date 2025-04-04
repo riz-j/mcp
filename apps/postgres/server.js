@@ -20,17 +20,20 @@ const server = new McpServer({
 	version: "1.0.0",
 });
 
-server.prompt("query-database", { query: z.string() }, async ({ query }) => {
-	return {
-		messages: [{
-			role: "user",
-			content: {
-				type: "text",
-				text:  `Prior to executing any database queries, please call the get-database-tables-and-schemas tool \n\n ${query}`
-			}
-		}]
+server.prompt("query-database", 
+	{ query: z.string() }, 
+	async ({ query }) => {
+		return {
+			messages: [{
+				role: "user",
+				content: {
+					type: "text",
+					text:  `Prior to executing any database queries, please call the get-database-tables-and-schemas tool \n\n ${query}`
+				}
+			}]
+		}
 	}
-});
+);
 
 server.tool("execute-query",
 	{ query: z.string() },
@@ -70,17 +73,6 @@ server.tool("get-database-tables-and-schemas", {},
 		return ToolResponse(result.rows);
 	}
 )
-
-server.resource(
-	"convictedFelons",
-	"data://convictedFelons",
-	async (uri) => ({
-	  contents: [{
-		uri: uri.href,
-		text: JSON.stringify(["Jeffrey Dahmer", "Jack Reaper"])
-	  }]
-	})
-  );
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
