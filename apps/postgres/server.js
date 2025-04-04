@@ -35,5 +35,19 @@ server.tool("listTasks",
 	}
 );
 
+server.tool("executeQuery",
+	{ query: z.string() },
+	async ({ query }) => {
+
+		const client = await pool.connect();
+		const result = await client.query(query);
+		client.release();
+
+		return {
+			content: [{ type: "text", text: JSON.stringify(result) }]
+		}
+	}
+)
+
 const transport = new StdioServerTransport();
 await server.connect(transport);
