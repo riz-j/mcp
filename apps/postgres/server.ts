@@ -15,20 +15,15 @@ const server = new McpServer({
 	version: "1.0.0",
 });
 
-server.prompt("query-database", 
-	{ query: z.string() }, 
-	async ({ query }) => {
-		return {
-			messages: [{
-				role: "user",
-				content: {
-					type: "text",
-					text:  `Prior to executing any database queries, please call the get-database-tables-and-schemas tool \n\n ${query}`
-				}
-			}]
+server.prompt("query-database", async () => ({
+	messages: [{
+		role: "user",
+		content: {
+			type: "text",
+			text: "Prior to executing any database queries, please call the get-database-tables-and-schemas tool",
 		}
-	}
-);
+	}]
+}));
 
 server.tool("execute-query",
 	{ query: z.string() },
