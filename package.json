@@ -3,8 +3,12 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "inspect": "bunx -y @modelcontextprotocol/inspector bun apps/postgres/server.js"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/pg": "^8.11.11"
   },
   "peerDependencies": {
     "typescript": "^5"

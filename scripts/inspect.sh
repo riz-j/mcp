@@ -1,1 +1,1 @@
-npx -y @modelcontextprotocol/inspector node apps/postgres/server.js
+bunx -y @modelcontextprotocol/inspector bun apps/postgres/server.js

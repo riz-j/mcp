@@ -5,9 +5,20 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import pg from "pg";
 
-function ToolResponse(data) {
+type ToolTextResponse = {
+  content: {
+    type: "text";
+    text: string;
+  }[];
+}
+
+
+function ToolResponse(data: unknown): ToolTextResponse {
 	return {
-		content: [{ type: "text", text: JSON.stringify(data) }]
+		content: [{ 
+			type: "text", 
+			text: JSON.stringify(data) 
+		}]
 	}
 }
 
