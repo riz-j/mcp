@@ -15,27 +15,13 @@ const server = new McpServer({
 	version: "1.0.0",
 });
 
-server.prompt("query-database", async () => ({
-	messages: [{
-		role: "user",
-		content: {
-			type: "text",
-			text: "Prior to executing any database queries, please call the get-database-tables-and-schemas tool",
-		}
-	}]
-}));
+server.tool("execute-query", { query: z.string() }, async ({ query }) => {
+	const client = await pool.connect();
+	const result = await client.query(query);
+	client.release();
 
-server.tool("execute-query",
-	{ query: z.string() },
-	async ({ query }) => {
-
-		const client = await pool.connect();
-		const result = await client.query(query);
-		client.release();
-
-		return ToolResponse(result);
-	}
-)
+	return ToolResponse(result);
+});
 
 server.tool("get-database-tables-and-schemas", {}, async () => {
 	const client = await pool.connect();

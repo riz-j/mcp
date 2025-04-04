@@ -5,7 +5,6 @@ export type ToolTextResponse = {
 	}[];
 }
 
-
 export function ToolResponse(data: unknown): ToolTextResponse {
 	return {
 		content: [{ 
