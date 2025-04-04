@@ -1,1 +1,1 @@
-npx -y @modelcontextprotocol/inspector node apps/calculator/server.js
+npx -y @modelcontextprotocol/inspector node apps/postgres/server.js

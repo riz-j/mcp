@@ -12,18 +12,27 @@ const result = await client.query("SELECT * FROM tasks");
 
 console.log(result);
 
-process.abort();
-
 const server = new McpServer({
-  name: "calculator",
+  name: "my-postgres",
   version: "1.0.0",
 });
 
-server.tool("add",
-  { a: z.number(), b: z.number() },
-  async ({ a, b }) => ({
-    content: [{ type: "text", text: `The calculation result is: ${String(a + b)}` }]
-  })
+server.tool("list tasks",
+  {  },
+  async function() {
+    const result = await client.query("SELECT * FROM tasks");
+    const tasks = result.rows;
+
+    return {
+      contents: [
+        {
+          uri: "/tasks",
+          mimeType: "application/json",
+          text: JSON.stringify(tasks),
+        }
+      ]
+    }
+  }
 );
 
 const transport = new StdioServerTransport();
