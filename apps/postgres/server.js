@@ -1,6 +1,6 @@
 // \\wsl.localhost\Debian\home\rizki\Code\mcp\apps\postgres\server.js
 
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import pg from "pg";
@@ -20,7 +20,7 @@ const server = new McpServer({
 	version: "1.0.0",
 });
 
-server.prompt("query-database", { query: z.string() },async ({ query }) => {
+server.prompt("query-database", { query: z.string() }, async ({ query }) => {
 	return {
 		messages: [{
 			role: "user",
@@ -70,6 +70,17 @@ server.tool("get-database-tables-and-schemas", {},
 		return ToolResponse(result.rows);
 	}
 )
+
+server.resource(
+	"convictedFelons",
+	"data://convictedFelons",
+	async (uri) => ({
+	  contents: [{
+		uri: uri.href,
+		text: JSON.stringify(["Jeffrey Dahmer", "Jack Reaper"])
+	  }]
+	})
+  );
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
