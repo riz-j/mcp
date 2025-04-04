@@ -1,6 +1,6 @@
 // \\wsl.localhost\Debian\home\rizki\Code\mcp\apps\postgres\server.js
 
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import pg from "pg";
@@ -18,44 +18,21 @@ const pool = new pg.Pool({
 const server = new McpServer({
 	name: "my-postgres",
 	version: "1.0.0",
-}, {
-	capabilities: {
-		resources: {}
+});
+
+server.prompt("query-database", { query: z.string() },async ({ query }) => {
+	return {
+		messages: [{
+			role: "user",
+			content: {
+				type: "text",
+				text:  `Prior to executing any database queries, please call the get-database-tables-and-schemas tool \n\n ${query}`
+			}
+		}]
 	}
 });
 
-server.tool("listUsers", 
-	{},
-	async () => ToolResponse(["Joe, Jane, James"])
-);
-
-// Add a dynamic greeting resource
-server.resource(
-	"greeting",
-	new ResourceTemplate("greeting://{name}", { list: undefined }),
-	async (uri, { name }) => ({
-	  contents: [{
-		uri: uri.href,
-		text: `Hello, ${name}!`
-	  }]
-	})
-  );
-
-server.tool("listTasks",
-	{},
-	async () => {
-		const client = await pool.connect();
-
-		const result = await client.query("SELECT * FROM tasks");
-		const tasks = result.rows;
-
-		client.release();
-		
-		return ToolResponse(tasks);
-	}
-);
-
-server.tool("executeQuery",
+server.tool("execute-query",
 	{ query: z.string() },
 	async ({ query }) => {
 
@@ -67,24 +44,7 @@ server.tool("executeQuery",
 	}
 )
 
-server.tool("getDatabaseTables", {}, async () => {
-	const client = await pool.connect();
-	const result = await client.query(`
-		SELECT
-			table_name
-		FROM
-			information_schema.tables
-		WHERE
-			table_schema NOT IN ('information_schema', 'pg_catalog')
-		ORDER BY
-			table_name;
-	`);
-	client.release();
-
-	return ToolResponse(result.rows);
-});
-
-server.tool("getDatabaseSchemas", {},
+server.tool("get-database-tables-and-schemas", {},
 	async () => {
 		const client = await pool.connect();
 		const result = await client.query(`
@@ -110,39 +70,6 @@ server.tool("getDatabaseSchemas", {},
 		return ToolResponse(result.rows);
 	}
 )
-
-// server.resource("schema", 
-// 	"schema://postgres",
-// 	async (uri) => {
-// 		const client = await pool.connect();
-// 		const result = await client.query(`
-// 			SELECT
-// 				table_name,
-// 				JSON_AGG(
-// 					JSON_BUILD_OBJECT(
-// 						'column_name', column_name,
-// 						'data_type', data_type
-// 					)
-// 				) AS columns
-// 			FROM
-// 				information_schema.columns
-// 			WHERE
-// 				table_schema NOT IN ('information_schema', 'pg_catalog')
-// 			GROUP BY
-// 				table_schema, table_name
-// 			ORDER BY
-// 				table_schema, table_name;
-// 		`);
-// 		client.release();
-
-// 		return {
-// 			contents: [{
-// 				uri: uri.href,
-// 				text: JSON.stringify(result.rows),
-// 			}]
-// 		}
-// 	}
-// );
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
