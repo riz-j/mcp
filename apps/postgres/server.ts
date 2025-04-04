@@ -37,32 +37,30 @@ server.tool("execute-query",
 	}
 )
 
-server.tool("get-database-tables-and-schemas", {},
-	async () => {
-		const client = await pool.connect();
-		const result = await client.query(`
-			SELECT
-				table_name,
-				JSON_AGG(
-					JSON_BUILD_OBJECT(
-						'column_name', column_name,
-						'data_type', data_type
-					)
-				) AS columns
-			FROM
-				information_schema.columns
-			WHERE
-				table_schema NOT IN ('information_schema', 'pg_catalog')
-			GROUP BY
-				table_schema, table_name
-			ORDER BY
-				table_schema, table_name;
-		`);
-		client.release();
+server.tool("get-database-tables-and-schemas", {}, async () => {
+	const client = await pool.connect();
+	const result = await client.query(`
+		SELECT
+			table_name,
+			JSON_AGG(
+				JSON_BUILD_OBJECT(
+					'column_name', column_name,
+					'data_type', data_type
+				)
+			) AS columns
+		FROM
+			information_schema.columns
+		WHERE
+			table_schema NOT IN ('information_schema', 'pg_catalog')
+		GROUP BY
+			table_schema, table_name
+		ORDER BY
+			table_schema, table_name;
+	`);
+	client.release();
 
-		return ToolResponse(result.rows);
-	}
-)
+	return ToolResponse(result.rows);
+});
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
