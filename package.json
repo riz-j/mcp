@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "inspect": "bunx -y @modelcontextprotocol/inspector bun apps/postgres/server.js"
+    "postgres": "bunx -y @modelcontextprotocol/inspector bun apps/postgres/server.js",
+    "mssql": "bunx -y @modelcontextprotocol/inspector bun apps/mssql/server.js"
   },
   "devDependencies": {
     "@types/bun": "latest",
