@@ -1,26 +1,10 @@
 // \\wsl.localhost\Debian\home\rizki\Code\mcp\apps\postgres\server.js
 
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import pg from "pg";
-
-type ToolTextResponse = {
-  content: {
-    type: "text";
-    text: string;
-  }[];
-}
-
-
-function ToolResponse(data: unknown): ToolTextResponse {
-	return {
-		content: [{ 
-			type: "text", 
-			text: JSON.stringify(data) 
-		}]
-	}
-}
+import { ToolResponse } from "./utils";
 
 const pool = new pg.Pool({
 	connectionString: "postgresql://admin:admin@localhost/postgres",
