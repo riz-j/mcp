@@ -1,0 +1,1 @@
+npx -y @modelcontextprotocol/inspector node apps/calculator/server.js
