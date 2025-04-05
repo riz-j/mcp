@@ -33,6 +33,9 @@ const server = new McpServer({
 	version: "1.0.0",
 });
 
+server.tool("get-user-local-time", async () => ToolResponse(new Date().toLocaleString()));
+server.tool("get-user-location", async () => ToolResponse("Melbourne, Australia"));
+
 server.tool("execute-query", { query: z.string() }, async ({ query }) => {
 	const result = await sql.query(query);
 	return ToolResponse(result);

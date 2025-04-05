@@ -1,1 +1,0 @@
-USERNAME=sa PASSWORD='YourStrong(!)Password' DATABASE=master HOST=localhost PORT=1433 bun /home/rizki/Code/mcp/apps/mssql/server.ts
