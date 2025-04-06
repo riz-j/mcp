@@ -10,6 +10,8 @@ const pool = new pg.Pool({
 	connectionString: "postgresql://admin:admin@localhost/postgres",
 });
 
+const client = await pool.connect();
+
 const server = new McpServer({
 	name: "my-postgres",
 	version: "1.0.0",
@@ -18,16 +20,27 @@ const server = new McpServer({
 server.tool("get-user-local-time", async () => ToolResponse(new Date().toLocaleString()));
 server.tool("get-user-location", async () => ToolResponse("Melbourne, Australia"));
 
+server.tool("list-tasks-by-filter",
+	{ clientName: z.string().nullable() },
+	async ({ clientName }) => {
+		const result = await client.query(`
+			SELECT *
+			FROM tasks t
+			INNER JOIN clients c ON t.client_id = c.id
+			WHERE c.name ILIKE '%${clientName}%';
+		`);
+	
+		return ToolResponse(result.rows);
+	}
+);
+
 server.tool("execute-query", { query: z.string() }, async ({ query }) => {
-	const client = await pool.connect();
 	const result = await client.query(query);
-	client.release();
 
 	return ToolResponse(result);
 });
 
 server.tool("get-database-tables-and-schemas", {}, async () => {
-	const client = await pool.connect();
 	const result = await client.query(`
 		SELECT table_name
 			,JSON_AGG(
@@ -41,7 +54,6 @@ server.tool("get-database-tables-and-schemas", {}, async () => {
 		GROUP BY table_schema, table_name
 		ORDER BY table_schema, table_name;
 	`);
-	client.release();
 
 	return ToolResponse(result.rows);
 });
