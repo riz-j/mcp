@@ -21,7 +21,9 @@ server.tool("get-user-local-time", async () => ToolResponse(new Date().toLocaleS
 server.tool("get-user-location", async () => ToolResponse("Melbourne, Australia"));
 
 server.tool("execute-query", { query: z.string() }, async ({ query }) => {
+	// await client.query("BEGIN TRANSACTION READ ONLY");
 	const result = await client.query(query);
+	// await client.query("COMMIT");
 
 	return ToolResponse(result);
 });
