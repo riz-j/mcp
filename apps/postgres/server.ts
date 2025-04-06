@@ -20,20 +20,6 @@ const server = new McpServer({
 server.tool("get-user-local-time", async () => ToolResponse(new Date().toLocaleString()));
 server.tool("get-user-location", async () => ToolResponse("Melbourne, Australia"));
 
-server.tool("list-tasks-by-filter",
-	{ clientName: z.string().nullable() },
-	async ({ clientName }) => {
-		const result = await client.query(`
-			SELECT *
-			FROM tasks t
-			INNER JOIN clients c ON t.client_id = c.id
-			WHERE c.name ILIKE '%${clientName}%';
-		`);
-	
-		return ToolResponse(result.rows);
-	}
-);
-
 server.tool("execute-query", { query: z.string() }, async ({ query }) => {
 	const result = await client.query(query);
 
