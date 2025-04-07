@@ -4,14 +4,14 @@ import { executeSearch, TextResponse } from "./utils";
 import { z } from "zod";
 
 const server = new McpServer({
-  name: "elastic-search-client",
-  version: "1.0.0",
+	name: "elastic-search-client",
+	version: "1.0.0",
 });
 
 server.tool("execute-search", { searchTerm: z.string() }, async ({ searchTerm }) => {
-  const result = await executeSearch<any>(searchTerm);
+	const result = await executeSearch<any>(searchTerm);
 
-  return TextResponse(result);
+	return TextResponse(result);
 });
 
 const transport = new StdioServerTransport();
