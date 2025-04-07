@@ -28,12 +28,16 @@ export async function executeSearch<T>(index: string, searchTerm: string): Promi
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({
 			query: {
-				query_string: {
-					query: searchTerm
+				bool: {
+					must: [
+						{ term: { masterorgid: "84d2a821d732_53697"} },
+						// { query_string: { query: searchTerm } }
+					]
 				}
 			}
 		})
 	});
+	
 
 	const result = await response.json() as any;
 	return result.hits.hits;

@@ -8,14 +8,14 @@ const server = new McpServer({
 	version: "1.0.0",
 });
 
-server.tool("search-clients", { searchTerm: z.string() }, async ({ searchTerm }) => {
+server.tool("get-all-clients", { searchTerm: z.string() }, async ({ searchTerm }) => {
 	const result = await executeSearch<any>("clients", searchTerm);
-	return TextResponse(result);
+	return TextResponse(result.slice(0, 7));
 });
 
-server.tool("search-tasks", { searchTerm: z.string() }, async ({ searchTerm }) => {
+server.tool("get-all-tasks", { searchTerm: z.string() }, async ({ searchTerm }) => {
 	const result = await executeSearch<any>("tasks", searchTerm);
-	return TextResponse(result);
+	return TextResponse(result.slice(0, 7));
 });
 
 const transport = new StdioServerTransport();
