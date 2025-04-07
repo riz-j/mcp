@@ -53,6 +53,39 @@ server.tool("get-all-quote-line-items", async () => {
 });
 
 server.tool(
+	"bulk-update-quote-line-item",
+	{ items: z.array(z.object({
+		id: z.number(),
+		name: z.string().nullable(),
+		quantity: z.number().nullable(),
+		cost: z.number().nullable(),
+		markup: z.enum(["10", "20", "30", "40", "50"]).nullable(),
+	})) },
+	async ({ items }) => {
+		for (const item of items) {
+			await sql.query(`
+				UPDATE qte_line_item
+				SET item = '${item.name}'
+					, qty = ${item.quantity}
+					, Costex = ${item.cost}
+					, markup = ${item.markup}
+=				WHERE Line_Item_id = ${item.id}
+					AND Quote_id = ${QUOTE_ID}
+					AND Primary_org_Id = ${CONTROLLING_ORG_ID};
+
+				UPDATE qte_line_item
+				SET unitSell = (CostEx + (CostEx * markup / 100))
+				WHERE Line_Item_id = ${item.id}
+					AND Quote_id = ${QUOTE_ID}
+					AND Primary_org_Id = ${CONTROLLING_ORG_ID};
+			`);
+		}
+
+		return TextResponse("Items have been updated");
+	}
+);
+
+server.tool(
 	"bulk-create-quote-line-item",
 	{ items: z.array(z.object({
 		name: z.string(),
@@ -86,6 +119,23 @@ server.tool(
 		return TextResponse("Items have been inserted");
 	}
 );
+
+server.tool(
+	"delete-some-quote-line-items",
+	{ ids: z.array(z.number()) },
+	async ({ ids }) => {
+		for (const id of ids) {
+			await sql.query(`
+				DELETE FROM qte_line_item
+				WHERE Line_Item_id = ${id}
+					AND Quote_id = ${QUOTE_ID}
+					AND Primary_org_Id = ${CONTROLLING_ORG_ID};
+			`);
+		}
+
+		return TextResponse("Items have been deleted");
+	}
+)
 
 server.tool("delete-all-quote-line-items", async () => {
 	await sql.query(`
