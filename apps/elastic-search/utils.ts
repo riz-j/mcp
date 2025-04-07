@@ -22,8 +22,8 @@ export interface SerachResult<T> {
 	_source: T;
 }
 
-export async function executeSearch<T>(searchTerm: string): Promise<Array<SerachResult<T>>> {
-	const response = await fetch("http://localhost:9201/clients/_search", {
+export async function executeSearch<T>(index: string, searchTerm: string): Promise<Array<SerachResult<T>>> {
+	const response = await fetch(`http://localhost:9201/${index}/_search`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({

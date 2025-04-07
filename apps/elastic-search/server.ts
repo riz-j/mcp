@@ -8,9 +8,13 @@ const server = new McpServer({
 	version: "1.0.0",
 });
 
-server.tool("execute-search", { searchTerm: z.string() }, async ({ searchTerm }) => {
-	const result = await executeSearch<any>(searchTerm);
+server.tool("search-clients", { searchTerm: z.string() }, async ({ searchTerm }) => {
+	const result = await executeSearch<any>("clients", searchTerm);
+	return TextResponse(result);
+});
 
+server.tool("search-tasks", { searchTerm: z.string() }, async ({ searchTerm }) => {
+	const result = await executeSearch<any>("tasks", searchTerm);
 	return TextResponse(result);
 });
 
