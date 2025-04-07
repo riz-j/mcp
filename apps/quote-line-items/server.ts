@@ -69,7 +69,7 @@ server.tool(
 					, qty = ${item.quantity}
 					, Costex = ${item.cost}
 					, markup = ${item.markup}
-=				WHERE Line_Item_id = ${item.id}
+				WHERE Line_Item_id = ${item.id}
 					AND Quote_id = ${QUOTE_ID}
 					AND Primary_org_Id = ${CONTROLLING_ORG_ID};
 
