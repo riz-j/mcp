@@ -1,0 +1,1 @@
+bunx -y @modelcontextprotocol/inspector bun apps/postgres/server.ts

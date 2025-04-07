@@ -7,7 +7,7 @@ import pg from "pg";
 import { ToolResponse } from "./utils";
 
 const pool = new pg.Pool({
-	connectionString: "postgresql://admin:admin@localhost/postgres",
+	connectionString: "postgresql://postgres:postgres@localhost/postgres",
 });
 
 const client = await pool.connect();
@@ -34,7 +34,8 @@ server.tool("get-database-tables-and-schemas", {}, async () => {
 			,JSON_AGG(
 				JSON_BUILD_OBJECT(
 					'column_name', column_name,
-					'data_type', data_type
+					'data_type', data_type,
+					'is_nullable', is_nullable
 				)
 			) AS columns
 		FROM information_schema.columns
