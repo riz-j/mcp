@@ -28,7 +28,7 @@ await sql.connect(sqlConfig).catch(err => {
 	process.exit(1);
 });
 
-const QUOTE_ID = 12268;
+const QUOTE_ID = 15102;
 const CONTROLLING_ORG_ID = 163803;
 
 const server = new McpServer({
@@ -36,7 +36,7 @@ const server = new McpServer({
 	version: "1.0.0",
 });
 
-server.tool("get-all-quote-line-items", async () => {
+server.tool("get-all-quote-line-items", { start: z.boolean() }, async () => {
 	const result = await sql.query(`
 		SELECT qli.Line_Item_id AS id
 			,qli.item AS 'name'
@@ -92,6 +92,7 @@ server.tool(
 		quantity: z.number(),
 		cost: z.number(),
 		markup: z.enum(["10", "20", "30", "40", "50"]),
+		type: z.enum(["material", "labour"])
 	})) },
 	async ({ items }) => {
 		for (const item of items) {
@@ -104,6 +105,7 @@ server.tool(
 					, Costex
 					, markup
 					, unitSell
+					, itemType
 				) VALUES (
 					${QUOTE_ID}
 					, ${CONTROLLING_ORG_ID}
@@ -112,11 +114,12 @@ server.tool(
 					, ${item.cost}
 					, ${item.markup}
 					, ${item.cost + (item.cost * parseInt(item.markup) / 100)}
+					, '${item.type === "labour" ? 0 : 1}'
 				);
 			`);
 		}
 
-		return TextResponse("Items have been inserted");
+		return TextResponse("Items successfully inserted");
 	}
 );
 
@@ -137,7 +140,7 @@ server.tool(
 	}
 )
 
-server.tool("delete-all-quote-line-items", async () => {
+server.tool("delete-all-quote-line-items", { execute: z.boolean() }, async () => {
 	await sql.query(`
 		DELETE FROM qte_line_item
 		WHERE Quote_id = ${QUOTE_ID}
