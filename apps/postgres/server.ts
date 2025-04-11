@@ -17,15 +17,35 @@ const server = new McpServer({
 	version: "1.0.0",
 });
 
-server.tool("execute-query", { query: z.string() }, async ({ query }) => {
-	// await client.query("BEGIN TRANSACTION READ ONLY");
+server.tool("perform_select_query", { query: z.string() }, async ({ query }) => {
+	await client.query("BEGIN TRANSACTION READ ONLY");
 	const result = await client.query(query);
-	// await client.query("COMMIT");
+	await client.query("COMMIT");
 
-	return ToolResponse(result);
+	return ToolResponse(result.rows);
 });
 
-server.tool("get-database-tables-and-columns", { any: z.boolean() }, async () => {
+server.tool("perform_insert_query", { query: z.string() }, async ({ query }) => {
+	const result = await client.query(query);
+	return ToolResponse({ insertedRows: result.rowCount });
+});
+
+server.tool("perform_update_query", { query: z.string() }, async ({ query }) => {
+	const result = await client.query(query);
+	return ToolResponse({ rowsAffected: result.rowCount });
+});
+
+server.tool("perform_delete_query", { query: z.string() }, async ({ query }) => {
+	const result = await client.query(query);
+	return ToolResponse({ deletedRows: result.rowCount });
+});
+
+server.tool("perform_alter_create_or_drop_query", { query: z.string() }, async ({ query }) => {
+	const result = await client.query(query);
+	return ToolResponse({ message: "Success! The query has been executed successfully! Please re-query the database schema to ensure the changes have been applied." });
+});
+
+server.tool("get_database_tables_and_columns", async () => {
 	const result = await client.query(`
 		SELECT table_name, column_name, data_type, is_nullable
 		FROM information_schema.columns

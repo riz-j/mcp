@@ -1,1 +1,1 @@
-bunx -y @modelcontextprotocol/inspector bun apps/postgres/server.ts
+bunx -y @modelcontextprotocol/inspector bun /home/rizki/Code/mcp/apps/postgres/server.ts
